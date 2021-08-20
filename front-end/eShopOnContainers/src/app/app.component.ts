@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
   
   ngOnInit(): void {
     this.isLogin = this.storageService.getToken(StorageService.TOKEN_KEY) ? true : false;
-    console.log(this.isLogin);
     this.router.navigate([this.isLogin ? '/product' : '/login']);
   }
   

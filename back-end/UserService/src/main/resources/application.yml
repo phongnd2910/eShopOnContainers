@@ -1,10 +1,9 @@
 #server
 server.port: ${USER_SERVICE_PORT:9002}
-server.servlet.context-path: ${CONTEXT_PATH:/api}
 
 #jwt
 jwt.secret: ${JWT_SECRET:phongnd2910}
-jwt.expiration: ${JWT_EXPIRATION:86400000} # 86400000 = 1 day
+jwt.expiration: ${JWT_EXPIRATION:1000} # 86400000 = 1 day
 
 #mysql
 spring.datasource.url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_SCHEMA:eshopcontainers}?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false

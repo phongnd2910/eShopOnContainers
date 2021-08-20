@@ -1,9 +1,8 @@
 package com.eshopcontainers.UserService.configuration;
 
 import com.eshopcontainers.UserService.service.UserDetailsService;
-import com.eshopcontainers.UserService.service.UserService;
-import com.eshopcontainers.UserService.service.UserServiceImplement;
 import com.eshopcontainers.UserService.utility.JWTUtility;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,12 +35,17 @@ public class JWTFilter extends OncePerRequestFilter {
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtUtility.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                        = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            try{
+                if (jwtUtility.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                            = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
+            }catch(ExpiredJwtException e){
+                System.out.println(e);
             }
+
 
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);

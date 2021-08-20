@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StorageService } from 'src/app/service/storage.service';
+import { UserService } from 'src/app/service/user.service';
 import { ValidatorService } from 'src/app/service/validator.service';
 
 @Component({
@@ -17,7 +18,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private storageService: StorageService,
     private router: Router,
-    private validator: ValidatorService
+    private validator: ValidatorService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -33,8 +35,16 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    this.storageService.setToken(StorageService.USER_KEY, "admin");
-    this.storageService.setToken(StorageService.TOKEN_KEY, "token");
-    location.reload();
+    this.form.disable();
+    this.errorMessage = '';
+    this.userService.authenticate(this.form.value).subscribe(response => {
+      this.storageService.setToken(StorageService.TOKEN_KEY, response.token)
+      location.reload();
+    }, error => {
+      this.errorMessage = 'Invalid username or password!';
+    }).add(() => {
+      this.form.enable();
+    });
+
   }
 }
